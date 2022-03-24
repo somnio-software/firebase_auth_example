@@ -1,0 +1,2 @@
+com/aboutyou/dart_packages/sign_in_with_apple/BuildConfig.java
+ com.aboutyou.dart_packages.sign_in_with_apple.BuildConfig

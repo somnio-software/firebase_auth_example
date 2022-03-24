@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "/Users/abhishekdoshi/Desktop/flutter_projects/auth_example/build/google_sign_in/intermediates/res/merged/debug/layout-v21/notification_template_custom_big.xml",
+        "source": "/Users/abhishekdoshi/.gradle/caches/transforms-2/files-2.1/14b93615368c2249f1830e26ca064ab5/core-1.6.0/res/layout-v21/notification_template_custom_big.xml"
+    },
+    {
+        "merged": "/Users/abhishekdoshi/Desktop/flutter_projects/auth_example/build/google_sign_in/intermediates/res/merged/debug/layout-v21/notification_action.xml",
+        "source": "/Users/abhishekdoshi/.gradle/caches/transforms-2/files-2.1/14b93615368c2249f1830e26ca064ab5/core-1.6.0/res/layout-v21/notification_action.xml"
+    },
+    {
+        "merged": "/Users/abhishekdoshi/Desktop/flutter_projects/auth_example/build/google_sign_in/intermediates/res/merged/debug/layout-v21/notification_action_tombstone.xml",
+        "source": "/Users/abhishekdoshi/.gradle/caches/transforms-2/files-2.1/14b93615368c2249f1830e26ca064ab5/core-1.6.0/res/layout-v21/notification_action_tombstone.xml"
+    },
+    {
+        "merged": "/Users/abhishekdoshi/Desktop/flutter_projects/auth_example/build/google_sign_in/intermediates/res/merged/debug/layout-v21/notification_template_icon_group.xml",
+        "source": "/Users/abhishekdoshi/.gradle/caches/transforms-2/files-2.1/14b93615368c2249f1830e26ca064ab5/core-1.6.0/res/layout-v21/notification_template_icon_group.xml"
+    }
+]
