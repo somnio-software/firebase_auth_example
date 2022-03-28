@@ -3,40 +3,39 @@ import 'package:auth_example/signup/bloc/signup_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SignUpView extends StatefulWidget {
-  @override
-  State<SignUpView> createState() => _SignUpViewState();
-}
+class SignUpView extends StatelessWidget {
+  final TextEditingController _emailController = TextEditingController();
 
-class _SignUpViewState extends State<SignUpView> {
-  TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-  TextEditingController _passwordController = TextEditingController();
+  late final SignupBloc _signupBloc;
 
   void onPressed() {
-    context.read<SignupBloc>().add(
-          SignupUserEvent(
-            email: _emailController.text,
-            password: _passwordController.text,
-          ),
-        );
+    _signupBloc.add(
+      SignupUserEvent(
+        email: _emailController.text,
+        password: _passwordController.text,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    _signupBloc = context.read<SignupBloc>();
+
     return BlocListener<SignupBloc, SignupState>(
       listener: (context, state) {
-        if (state is SignupSuccessState) {
+        if (state.status == SignupStatus.success) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => Home(),
             ),
           );
         }
-        if (state is SignupFailureState) {
+        if (state.status == SignupStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.errorMessage),
+              content: Text(state.message),
             ),
           );
         }
@@ -54,9 +53,7 @@ class _SignUpViewState extends State<SignUpView> {
               const SizedBox(height: 30.0),
               _CreateAccountPassword(passwordController: _passwordController),
               const SizedBox(height: 30.0),
-              _SubmitButton(
-                onPressed: onPressed,
-              ),
+              _SubmitButton(onPressed: onPressed),
             ],
           ),
         ),
@@ -65,24 +62,20 @@ class _SignUpViewState extends State<SignUpView> {
   }
 }
 
-class _CreateAccountEmail extends StatefulWidget {
+class _CreateAccountEmail extends StatelessWidget {
   _CreateAccountEmail({
     Key? key,
     required this.emailController,
   }) : super(key: key);
+
   final TextEditingController emailController;
 
-  @override
-  State<_CreateAccountEmail> createState() => _CreateAccountEmailState();
-}
-
-class _CreateAccountEmailState extends State<_CreateAccountEmail> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width / 2,
       child: TextField(
-        controller: widget.emailController,
+        controller: emailController,
         decoration: const InputDecoration(hintText: 'Email'),
       ),
     );

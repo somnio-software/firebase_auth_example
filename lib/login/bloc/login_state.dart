@@ -1,20 +1,19 @@
 part of 'login_bloc.dart';
 
-@immutable
-abstract class LoginState extends Equatable {
-  @override
-  List<Object?> get props => [];
+enum LoginStatus {
+  success,
+  failure,
 }
 
-class LoginInitial extends LoginState {}
+class LoginState extends Equatable {
+  LoginState({
+    this.message = '',
+    this.status = LoginStatus.success,
+  });
 
-class LoginSuccessState extends LoginState {}
-
-class LoginFailureState extends LoginState {
-  LoginFailureState({required this.errorMessage});
-
-  final String errorMessage;
+  final String message;
+  final LoginStatus status;
 
   @override
-  List<Object?> get props => [errorMessage];
+  List<Object?> get props => [];
 }

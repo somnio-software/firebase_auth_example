@@ -12,8 +12,6 @@ class LoginUserEvent extends LoginEvent {
     required this.password,
   });
 
-  final String email, password;
-
-  @override
-  List<Object?> get props => [email, password];
+  final String email;
+  final String password;
 }

@@ -10,9 +10,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc({
     required AuthService authService,
   })  : _authService = authService,
-        super(LoginInitial()) {
+        super(LoginState()) {
     on<LoginUserEvent>(_handleLoginWithEmailAndPasswordEvent);
   }
+
   final AuthService _authService;
 
   Future<void> _handleLoginWithEmailAndPasswordEvent(
@@ -25,13 +26,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         password: event.password,
       );
 
-      emit(LoginSuccessState());
+      emit(LoginState(message: 'Success', status: LoginStatus.success));
     } catch (e) {
-      emit(
-        LoginFailureState(
-          errorMessage: e.toString(),
-        ),
-      );
+      emit(LoginState(message: e.toString(), status: LoginStatus.failure));
     }
   }
 }

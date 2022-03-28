@@ -9,7 +9,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
   SignupBloc({
     required AuthService authService,
   })  : _authService = authService,
-        super(SignupInitial()) {
+        super(SignupState()) {
     on<SignupUserEvent>(_handleCreateAccountEvent);
   }
   final AuthService _authService;
@@ -24,13 +24,9 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         password: event.password,
       );
 
-      emit(SignupSuccessState());
+      emit(SignupState(status: SignupStatus.success));
     } catch (e) {
-      emit(
-        SignupFailureState(
-          errorMessage: e.toString(),
-        ),
-      );
+      emit(SignupState(message: e.toString(), status: SignupStatus.failure));
     }
   }
 }

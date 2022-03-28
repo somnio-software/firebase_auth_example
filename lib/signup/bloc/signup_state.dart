@@ -1,20 +1,19 @@
 part of 'signup_bloc.dart';
 
-@immutable
-abstract class SignupState extends Equatable {
-  @override
-  List<Object?> get props => [];
+enum SignupStatus {
+  success,
+  failure,
 }
 
-class SignupInitial extends SignupState {}
+class SignupState extends Equatable {
+  SignupState({
+    this.message = '',
+    this.status = SignupStatus.success,
+  });
 
-class SignupSuccessState extends SignupState {}
-
-class SignupFailureState extends SignupState {
-  SignupFailureState({required this.errorMessage});
-
-  final String errorMessage;
+  final String message;
+  final SignupStatus status;
 
   @override
-  List<Object?> get props => [errorMessage];
+  List<Object?> get props => [];
 }

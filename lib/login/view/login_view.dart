@@ -1,43 +1,41 @@
 import 'package:auth_example/login/bloc/login_bloc.dart';
-import 'package:auth_example/signup/view/signup_view.dart';
+import 'package:auth_example/signup/view/signup_page.dart';
 import 'package:auth_example/home/view/home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LoginView extends StatefulWidget {
-  @override
-  State<LoginView> createState() => _LoginViewState();
-}
-
-class _LoginViewState extends State<LoginView> {
+class LoginView extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
 
   final TextEditingController _passwordController = TextEditingController();
 
+  late final LoginBloc _loginBloc;
+
   void onPressed() {
-    context.read<LoginBloc>().add(
-          LoginUserEvent(
-            email: _emailController.text,
-            password: _passwordController.text,
-          ),
-        );
+    _loginBloc.add(
+      LoginUserEvent(
+        email: _emailController.text,
+        password: _passwordController.text,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    _loginBloc = context.read<LoginBloc>();
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
-        if (state is LoginSuccessState) {
+        if (state.status == LoginStatus.success) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => Home(),
             ),
           );
         }
-        if (state is LoginFailureState) {
+        if (state.status == LoginStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.errorMessage),
+              content: Text(state.message),
             ),
           );
         }
@@ -66,50 +64,38 @@ class _LoginViewState extends State<LoginView> {
   }
 }
 
-class _LoginEmail extends StatefulWidget {
+class _LoginEmail extends StatelessWidget {
   _LoginEmail({
     Key? key,
     required this.emailController,
   }) : super(key: key);
 
   final TextEditingController emailController;
-
-  @override
-  State<_LoginEmail> createState() => _LoginEmailState();
-}
-
-class _LoginEmailState extends State<_LoginEmail> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width / 2,
       child: TextField(
-        controller: widget.emailController,
+        controller: emailController,
         decoration: const InputDecoration(hintText: 'Email'),
       ),
     );
   }
 }
 
-class _LoginPassword extends StatefulWidget {
+class _LoginPassword extends StatelessWidget {
   _LoginPassword({
     Key? key,
     required this.passwordController,
   }) : super(key: key);
 
   final TextEditingController passwordController;
-
-  @override
-  State<_LoginPassword> createState() => _LoginPasswordState();
-}
-
-class _LoginPasswordState extends State<_LoginPassword> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width / 2,
       child: TextField(
-        controller: widget.passwordController,
+        controller: passwordController,
         obscureText: true,
         decoration: const InputDecoration(
           hintText: 'Password',
@@ -125,7 +111,7 @@ class _SubmitButton extends StatelessWidget {
     required this.onPressed,
   }) : super(key: key);
 
-  final void Function() onPressed;
+  final Function() onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +131,7 @@ class _CreateAccountButton extends StatelessWidget {
       onPressed: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => SignUpView(),
+            builder: (context) => SignupPage(),
           ),
         );
       },
