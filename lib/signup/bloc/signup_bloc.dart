@@ -10,23 +10,40 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
     required AuthService authService,
   })  : _authService = authService,
         super(SignupState()) {
-    on<SignupUserEvent>(_handleCreateAccountEvent);
+    on<SignupButtonPressedEvent>(_handleCreateAccountEvent);
+    on<SignupEmailChangedEvent>(_handleSignupEmailChangedEvent);
+    on<SignupPasswordChangedEvent>(_handleSignupPasswordChangedEvent);
   }
+
   final AuthService _authService;
 
+  Future<void> _handleSignupEmailChangedEvent(
+    SignupEmailChangedEvent event,
+    Emitter<SignupState> emit,
+  ) async {
+    emit(state.copyWith(email: event.email));
+  }
+
+  Future<void> _handleSignupPasswordChangedEvent(
+    SignupPasswordChangedEvent event,
+    Emitter<SignupState> emit,
+  ) async {
+    emit(state.copyWith(password: event.password));
+  }
+
   Future<void> _handleCreateAccountEvent(
-    SignupUserEvent event,
+    SignupButtonPressedEvent event,
     Emitter<SignupState> emit,
   ) async {
     try {
       await _authService.createUserWithEmailAndPassword(
-        email: event.email,
-        password: event.password,
+        email: state.email,
+        password: state.password,
       );
 
-      emit(SignupState(status: SignupStatus.success));
+      emit(state.copyWith(status: SignupStatus.success));
     } catch (e) {
-      emit(SignupState(message: e.toString(), status: SignupStatus.failure));
+      emit(state.copyWith(message: e.toString(), status: SignupStatus.failure));
     }
   }
 }

@@ -5,32 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginView extends StatelessWidget {
-  final TextEditingController _emailController = TextEditingController();
-
-  final TextEditingController _passwordController = TextEditingController();
-
-  late final LoginBloc _loginBloc;
-
-  void onPressed() {
-    _loginBloc.add(
-      LoginUserEvent(
-        email: _emailController.text,
-        password: _passwordController.text,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    _loginBloc = context.read<LoginBloc>();
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state.status == LoginStatus.success) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => Home(),
-            ),
-          );
+          Navigator.of(context).pushReplacement(Home.route());
         }
         if (state.status == LoginStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -40,24 +20,35 @@ class LoginView extends StatelessWidget {
           );
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Login'),
-          centerTitle: true,
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _LoginEmail(emailController: _emailController),
-              const SizedBox(height: 30.0),
-              _LoginPassword(passwordController: _passwordController),
-              const SizedBox(height: 30.0),
-              _SubmitButton(onPressed: onPressed),
-              const SizedBox(height: 30.0),
-              _CreateAccountButton(),
-            ],
-          ),
+      child: const _LoginForm(),
+    );
+  }
+}
+
+class _LoginForm extends StatelessWidget {
+  const _LoginForm({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Login'),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _LoginEmail(),
+            const SizedBox(height: 30.0),
+            _LoginPassword(),
+            const SizedBox(height: 30.0),
+            _SubmitButton(),
+            const SizedBox(height: 30.0),
+            _CreateAccountButton(),
+          ],
         ),
       ),
     );
@@ -67,16 +58,16 @@ class LoginView extends StatelessWidget {
 class _LoginEmail extends StatelessWidget {
   _LoginEmail({
     Key? key,
-    required this.emailController,
   }) : super(key: key);
 
-  final TextEditingController emailController;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width / 2,
       child: TextField(
-        controller: emailController,
+        onChanged: ((value) {
+          context.read<LoginBloc>().add(LoginEmailChangedEvent(email: value));
+        }),
         decoration: const InputDecoration(hintText: 'Email'),
       ),
     );
@@ -86,16 +77,18 @@ class _LoginEmail extends StatelessWidget {
 class _LoginPassword extends StatelessWidget {
   _LoginPassword({
     Key? key,
-    required this.passwordController,
   }) : super(key: key);
 
-  final TextEditingController passwordController;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width / 2,
       child: TextField(
-        controller: passwordController,
+        onChanged: ((value) {
+          context
+              .read<LoginBloc>()
+              .add(LoginPasswordChangedEvent(password: value));
+        }),
         obscureText: true,
         decoration: const InputDecoration(
           hintText: 'Password',
@@ -108,15 +101,18 @@ class _LoginPassword extends StatelessWidget {
 class _SubmitButton extends StatelessWidget {
   _SubmitButton({
     Key? key,
-    required this.onPressed,
   }) : super(key: key);
-
-  final Function() onPressed;
 
   @override
   Widget build(BuildContext context) {
+    final email = context.select((LoginBloc bloc) => bloc.state.email);
     return ElevatedButton(
-      onPressed: onPressed,
+      onPressed: () {
+        print(email);
+        context.read<LoginBloc>().add(
+              LoginButtonPressedEvent(),
+            );
+      },
       child: const Text('Login'),
     );
   }
