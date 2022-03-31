@@ -105,10 +105,8 @@ class _SubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final email = context.select((LoginBloc bloc) => bloc.state.email);
     return ElevatedButton(
       onPressed: () {
-        print(email);
         context.read<LoginBloc>().add(
               LoginButtonPressedEvent(),
             );

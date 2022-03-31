@@ -1,7 +1,6 @@
 import 'package:auth_example/signup/bloc/signup_bloc.dart';
 import 'package:auth_example/signup/view/signup_view.dart';
 import 'package:auth_service/auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,9 +11,7 @@ class SignupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => SignupBloc(
-        authService: FirebaseAuthService(
-          authService: FirebaseAuth.instance,
-        ),
+        authService: context.read<FirebaseAuthService>(),
       ),
       child: SignUpView(),
     );
