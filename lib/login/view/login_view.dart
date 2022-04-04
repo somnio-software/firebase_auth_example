@@ -1,12 +1,34 @@
-import 'package:auth_example/signup/view/signup_view.dart';
+import 'package:auth_example/login/bloc/login_bloc.dart';
+import 'package:auth_example/signup/view/signup_page.dart';
 import 'package:auth_example/home/view/home_view.dart';
-import 'package:auth_service/auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginView extends StatelessWidget {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<LoginBloc, LoginState>(
+      listener: (context, state) {
+        if (state.status == LoginStatus.success) {
+          Navigator.of(context).pushReplacement(Home.route());
+        }
+        if (state.status == LoginStatus.failure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+            ),
+          );
+        }
+      },
+      child: const _LoginForm(),
+    );
+  }
+}
+
+class _LoginForm extends StatelessWidget {
+  const _LoginForm({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,14 +41,11 @@ class LoginView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _LoginEmail(emailController: _emailController),
+            _LoginEmail(),
             const SizedBox(height: 30.0),
-            _LoginPassword(passwordController: _passwordController),
+            _LoginPassword(),
             const SizedBox(height: 30.0),
-            _SubmitButton(
-              email: _emailController.text,
-              password: _passwordController.text,
-            ),
+            _SubmitButton(),
             const SizedBox(height: 30.0),
             _CreateAccountButton(),
           ],
@@ -39,17 +58,16 @@ class LoginView extends StatelessWidget {
 class _LoginEmail extends StatelessWidget {
   _LoginEmail({
     Key? key,
-    required this.emailController,
   }) : super(key: key);
-
-  final TextEditingController emailController;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width / 2,
       child: TextField(
-        controller: emailController,
+        onChanged: ((value) {
+          context.read<LoginBloc>().add(LoginEmailChangedEvent(email: value));
+        }),
         decoration: const InputDecoration(hintText: 'Email'),
       ),
     );
@@ -59,17 +77,18 @@ class _LoginEmail extends StatelessWidget {
 class _LoginPassword extends StatelessWidget {
   _LoginPassword({
     Key? key,
-    required this.passwordController,
   }) : super(key: key);
-
-  final TextEditingController passwordController;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width / 2,
       child: TextField(
-        controller: passwordController,
+        onChanged: ((value) {
+          context
+              .read<LoginBloc>()
+              .add(LoginPasswordChangedEvent(password: value));
+        }),
         obscureText: true,
         decoration: const InputDecoration(
           hintText: 'Password',
@@ -82,32 +101,15 @@ class _LoginPassword extends StatelessWidget {
 class _SubmitButton extends StatelessWidget {
   _SubmitButton({
     Key? key,
-    required this.email,
-    required this.password,
   }) : super(key: key);
 
-  final String email, password;
-  final AuthService _authService = FirebaseAuthService(
-    authService: FirebaseAuth.instance,
-  );
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () async {
-        try {
-          await _authService.signInWithEmailAndPassword(
-            email: email,
-            password: password,
-          );
-          Navigator.of(context)
-              .pushReplacement(MaterialPageRoute(builder: (context) => Home()));
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(e.toString()),
-            ),
-          );
-        }
+      onPressed: () {
+        context.read<LoginBloc>().add(
+              LoginButtonPressedEvent(),
+            );
       },
       child: const Text('Login'),
     );
@@ -123,7 +125,7 @@ class _CreateAccountButton extends StatelessWidget {
       onPressed: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => SignUpView(),
+            builder: (context) => SignupPage(),
           ),
         );
       },

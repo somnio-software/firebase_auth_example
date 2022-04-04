@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 
 class Home extends StatelessWidget {
+  static Route route() {
+    return MaterialPageRoute(
+      builder: (context) => Home(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
